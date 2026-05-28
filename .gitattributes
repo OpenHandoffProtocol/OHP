@@ -1,0 +1,11 @@
+# Keep LICENSE and NOTICE LF-only so GitHub recognises the canonical text
+LICENSE text eol=lf
+NOTICE  text eol=lf
+
+# JSON, YAML and schema files: normalize line endings
+*.json   text eol=lf
+*.cddl   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.md     text
+*.mjs    text eol=lf
