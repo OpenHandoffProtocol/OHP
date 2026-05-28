@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ohp.dev/schemas/well-known/ohp-ai-systems.schema.json",
+  "title": "OHP AI System Registry",
+  "description": "Schema for /.well-known/ohp-ai-systems.json. Published by issuers operating at the Regulated tier; lists the versioned AI systems the issuer may attest to in aiSystem blocks. Receivers can verify aiSystem.id and aiSystem.modelCardSha256 against this registry.",
+  "type": "object",
+  "required": ["ohp", "issuer", "systems"],
+  "properties": {
+    "ohp": { "type": "string", "const": "0.1" },
+    "issuer": {
+      "type": "object",
+      "required": ["did"],
+      "properties": {
+        "did": { "type": "string", "pattern": "^did:[a-z0-9]+:.+$" },
+        "vendor": { "type": "string" }
+      }
+    },
+    "publishedAt": { "type": "string", "format": "date-time" },
+    "systems": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/aiSystemEntry" }
+    },
+    "signature": {
+      "type": "string",
+      "description": "Detached JWS over canonical CBOR of this manifest, signed with one of the issuer's published OHP sign keys."
+    }
+  },
+  "$defs": {
+    "aiSystemEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "modelCardSha256",
+        "riskClass",
+        "ceConformity"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "URN of the AI system, version-distinct."
+        },
+        "version": { "type": "string" },
+        "modelCardSha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "riskClass": {
+          "type": "string",
+          "enum": ["prohibited", "high", "limited", "minimal"]
+        },
+        "annexIIIClause": { "type": "string" },
+        "ceConformity": {
+          "type": "object",
+          "required": ["assessmentRoute", "declarationUrl"],
+          "properties": {
+            "assessmentRoute": {
+              "type": "string",
+              "enum": ["self", "notified-body"]
+            },
+            "notifiedBodyId": { "type": ["string", "null"] },
+            "declarationUrl": { "type": "string", "format": "uri" },
+            "validUntil": { "type": "string", "format": "date" }
+          }
+        },
+        "gpaiChain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["provider", "model", "systemicRisk"],
+            "properties": {
+              "provider": { "type": "string" },
+              "model": { "type": "string" },
+              "systemicRisk": { "type": "boolean" },
+              "policyUrl": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "postMarketEndpoint": { "type": "string", "format": "uri" },
+        "introducedAt": { "type": "string", "format": "date" },
+        "retiredAt": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

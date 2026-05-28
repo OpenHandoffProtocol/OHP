@@ -1,0 +1,579 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ohp.dev/schemas/ohp-envelope.schema.json",
+  "title": "OHP Conversation State Envelope",
+  "description": "Schema for the Open Handoff Protocol Conversation State Envelope (CSE), v0.1.",
+  "type": "object",
+  "required": [
+    "ohp",
+    "conformance",
+    "id",
+    "issuedAt",
+    "notAfter",
+    "issuer",
+    "audience",
+    "session",
+    "intent",
+    "control"
+  ],
+  "properties": {
+    "ohp": {
+      "type": "string",
+      "const": "0.1",
+      "description": "Wire-format version."
+    },
+    "conformance": {
+      "type": "string",
+      "enum": ["core", "signed", "sealed", "regulated"],
+      "description": "Declared conformance tier."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^cse_[0-9A-HJKMNP-TV-Z]{26}$",
+      "description": "ULID-keyed envelope identifier (idempotency key)."
+    },
+    "issuedAt": { "$ref": "#/$defs/rfc3339" },
+    "notBefore": { "$ref": "#/$defs/rfc3339" },
+    "notAfter": { "$ref": "#/$defs/rfc3339" },
+    "issuer": { "$ref": "#/$defs/issuer" },
+    "audience": { "$ref": "#/$defs/audience" },
+    "aiSystem": { "$ref": "#/$defs/aiSystem" },
+    "governance": { "$ref": "#/$defs/governance" },
+    "oversight": { "$ref": "#/$defs/oversight" },
+    "session": { "$ref": "#/$defs/session" },
+    "caller": { "$ref": "#/$defs/caller" },
+    "intent": { "$ref": "#/$defs/intent" },
+    "sealed": { "$ref": "#/$defs/sealed" },
+    "transcript": { "$ref": "#/$defs/transcript" },
+    "memory": { "$ref": "#/$defs/memory" },
+    "decisions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/decision" }
+    },
+    "policy": { "$ref": "#/$defs/policy" },
+    "control": { "$ref": "#/$defs/control" },
+    "transparency": { "$ref": "#/$defs/transparency" },
+    "signatures": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/signature" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "conformance": { "const": "signed" } } },
+      "then": { "required": ["signatures"] }
+    },
+    {
+      "if": { "properties": { "conformance": { "const": "sealed" } } },
+      "then": {
+        "required": ["signatures", "caller"],
+        "properties": {
+          "caller": { "required": ["assurance", "identity"] },
+          "audience": { "required": ["recipientKeys"] },
+          "session": { "required": ["media"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "conformance": { "const": "regulated" } } },
+      "then": {
+        "required": [
+          "signatures",
+          "caller",
+          "aiSystem",
+          "governance",
+          "decisions",
+          "transparency"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "rfc3339": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 date-time."
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["core", "signed", "sealed", "regulated"]
+    },
+    "did": {
+      "type": "string",
+      "pattern": "^did:[a-z0-9]+:.+$",
+      "description": "Decentralised Identifier (e.g. did:web:agents.example.com)."
+    },
+    "aiRole": {
+      "type": "string",
+      "enum": ["provider", "deployer", "importer", "distributor"]
+    },
+    "issuer": {
+      "type": "object",
+      "required": ["vendor", "agentId", "region"],
+      "properties": {
+        "vendor": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,64}$",
+          "description": "Short vendor identifier."
+        },
+        "agentId": { "type": "string" },
+        "region": { "type": "string" },
+        "did": { "$ref": "#/$defs/did" },
+        "federation": { "$ref": "#/$defs/did" },
+        "aiRole": { "$ref": "#/$defs/aiRole" },
+        "attestation": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string" },
+            "evidence": { "type": "string" }
+          },
+          "required": ["type", "evidence"]
+        }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "required": ["vendor", "purpose", "minTier"],
+      "properties": {
+        "vendor": { "type": "string" },
+        "did": { "$ref": "#/$defs/did" },
+        "aiRole": { "$ref": "#/$defs/aiRole" },
+        "purpose": { "type": "string" },
+        "minTier": { "$ref": "#/$defs/tier" },
+        "recipientKeys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kid", "alg"],
+            "properties": {
+              "kid": { "type": "string" },
+              "alg": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "aiSystem": {
+      "type": "object",
+      "required": ["id", "version", "modelCardSha256", "riskClass"],
+      "properties": {
+        "id": { "type": "string" },
+        "version": { "type": "string" },
+        "modelCardSha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "riskClass": {
+          "type": "string",
+          "enum": ["prohibited", "high", "limited", "minimal"]
+        },
+        "annexIIIClause": { "type": "string" },
+        "ceConformity": {
+          "type": "object",
+          "required": ["assessmentRoute", "declarationUrl"],
+          "properties": {
+            "assessmentRoute": {
+              "type": "string",
+              "enum": ["self", "notified-body"]
+            },
+            "notifiedBodyId": { "type": ["string", "null"] },
+            "declarationUrl": { "type": "string", "format": "uri" },
+            "validUntil": { "type": "string", "format": "date" }
+          }
+        },
+        "gpaiChain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["provider", "model", "systemicRisk"],
+            "properties": {
+              "provider": { "type": "string" },
+              "model": { "type": "string" },
+              "systemicRisk": { "type": "boolean" },
+              "policyUrl": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "postMarketEndpoint": { "type": "string", "format": "uri" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "riskClass": { "const": "high" } } },
+          "then": { "required": ["annexIIIClause", "ceConformity"] }
+        }
+      ]
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "aiia": {
+          "type": "object",
+          "required": ["id", "lastReviewedAt", "uri"],
+          "properties": {
+            "id": { "type": "string" },
+            "lastReviewedAt": { "type": "string", "format": "date" },
+            "residualRisk": { "type": "string", "enum": ["low", "medium", "high"] },
+            "uri": { "type": "string" }
+          }
+        },
+        "fria": {
+          "type": "object",
+          "required": ["id", "completedAt", "uri"],
+          "properties": {
+            "id": { "type": "string" },
+            "completedAt": { "type": "string", "format": "date" },
+            "uri": { "type": "string" }
+          }
+        },
+        "prohibited": {
+          "type": "object",
+          "required": [
+            "subliminalManipulation",
+            "socialScoring",
+            "rtBiometricIdPublic",
+            "emotionRecognitionWorkplace",
+            "sensitiveBiometricCategorisation",
+            "attestationJws"
+          ],
+          "properties": {
+            "subliminalManipulation": { "type": "boolean" },
+            "socialScoring": { "type": "boolean" },
+            "rtBiometricIdPublic": { "type": "boolean" },
+            "emotionRecognitionWorkplace": { "type": "boolean" },
+            "sensitiveBiometricCategorisation": { "type": "boolean" },
+            "attestationJws": { "type": "string" }
+          }
+        },
+        "art50Disclosure": {
+          "type": "object",
+          "required": ["disclosed", "at", "modality", "language", "transcript", "ack", "proofJws"],
+          "properties": {
+            "disclosed": { "type": "boolean" },
+            "at": { "$ref": "#/$defs/rfc3339" },
+            "modality": { "type": "string", "enum": ["voice-prompt", "tts-preamble", "dtmf"] },
+            "language": { "type": "string" },
+            "transcript": { "type": "string" },
+            "ack": { "type": "string", "enum": ["explicit-yes", "implicit-continuation"] },
+            "proofJws": { "type": "string" }
+          }
+        },
+        "art86Explanation": {
+          "type": "object",
+          "required": ["available", "endpoint"],
+          "properties": {
+            "available": { "type": "boolean" },
+            "endpoint": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    },
+    "oversight": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["human-in-the-loop", "human-on-the-loop", "human-in-command"]
+        },
+        "supervisor": {
+          "type": "object",
+          "properties": {
+            "presence": { "type": "string", "enum": ["live", "available", "none"] },
+            "identity": { "type": "string" },
+            "channelRef": { "type": "string" }
+          }
+        },
+        "escalation": {
+          "type": "object",
+          "properties": {
+            "triggers": { "type": "array", "items": { "type": "string" } },
+            "verb": { "type": "string", "enum": ["PROPOSE", "ACCEPT", "REJECT", "ASSUME", "RETURN", "INCIDENT"] },
+            "target": { "type": "string" }
+          }
+        },
+        "lastReviewAt": { "$ref": "#/$defs/rfc3339" }
+      }
+    },
+    "session": {
+      "type": "object",
+      "required": ["callId", "channel", "locale"],
+      "properties": {
+        "callId": { "type": "string" },
+        "channel": {
+          "type": "string",
+          "enum": ["voice/pstn", "voice/webrtc", "voice/sip", "chat/web", "chat/sms", "video/webrtc"]
+        },
+        "locale": { "type": "string" },
+        "startedAt": { "$ref": "#/$defs/rfc3339" },
+        "media": {
+          "type": "object",
+          "properties": {
+            "rtpFingerprint": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "sdpHints": {
+              "type": "object",
+              "properties": {
+                "codecs": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "caller": {
+      "type": "object",
+      "properties": {
+        "assurance": {
+          "type": "object",
+          "required": ["method", "ial", "aal", "fal", "idp", "proofJws"],
+          "properties": {
+            "method": { "type": "string" },
+            "ial": { "type": "string", "enum": ["IAL1", "IAL2", "IAL3"] },
+            "aal": { "type": "string", "enum": ["AAL1", "AAL2", "AAL3"] },
+            "fal": { "type": "string", "enum": ["FAL1", "FAL2", "FAL3"] },
+            "lastStepUpAt": { "$ref": "#/$defs/rfc3339" },
+            "idp": { "$ref": "#/$defs/did" },
+            "proofJws": { "type": "string" }
+          }
+        },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "sdJwtVc": { "type": "string" },
+            "disclosures": { "type": "array", "items": { "type": "string" } },
+            "claimsRevealed": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "consent": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consentReceipt" }
+        }
+      }
+    },
+    "consentReceipt": {
+      "type": "object",
+      "required": ["receiptId", "purpose", "scope", "lawfulBasis", "jurisdiction"],
+      "properties": {
+        "receiptId": { "type": "string" },
+        "purpose": { "type": "string" },
+        "scope": { "type": "array", "items": { "type": "string" } },
+        "lawfulBasis": { "type": "string" },
+        "specialCategoryBasis": { "type": ["string", "null"] },
+        "jurisdiction": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "transferMechanism": {
+          "type": "string",
+          "enum": ["scc", "dpf", "adequacy", "uk-adequacy", "none"]
+        }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "required": ["current", "stack", "slots"],
+      "properties": {
+        "current": {
+          "type": "object",
+          "required": ["name", "confidence"],
+          "properties": {
+            "name": { "type": "string" },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "stack": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "status"],
+            "properties": {
+              "name": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": ["satisfied", "pending", "failed"]
+              }
+            }
+          }
+        },
+        "slots": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "sealed": {
+      "type": "object",
+      "required": ["alg", "recipients", "ciphertext", "fields"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "const": "HPKE/X25519-SHA256-CHACHA20POLY1305"
+        },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["kid", "enc"],
+            "properties": {
+              "kid": { "type": "string" },
+              "enc": { "type": "string" }
+            }
+          }
+        },
+        "ciphertext": { "type": "string" },
+        "fields": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "transcript": {
+      "type": "object",
+      "required": ["summary"],
+      "properties": {
+        "format": { "type": "string", "const": "ohp.turns/v1" },
+        "redaction": {
+          "type": "object",
+          "required": ["policy", "version"],
+          "properties": {
+            "policy": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        },
+        "turns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["t", "role", "text"],
+            "properties": {
+              "t": { "type": "string" },
+              "role": { "type": "string", "enum": ["caller", "agent", "system"] },
+              "text": { "type": "string" }
+            }
+          }
+        },
+        "summary": { "type": "string" }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "modelAllowlist": { "type": "array", "items": { "type": "string" } },
+        "embeddings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["model", "vectorRef"],
+            "properties": {
+              "model": { "type": "string" },
+              "vectorRef": { "type": "string" }
+            }
+          }
+        },
+        "facts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["id", "at", "type", "input", "output"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^dec_[0-9A-HJKMNP-TV-Z]{26}$"
+        },
+        "at": { "$ref": "#/$defs/rfc3339" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "intent.classification",
+            "slot.assignment",
+            "routing.decision",
+            "payment.authorisation",
+            "assurance.step-up",
+            "tool.call",
+            "policy.refusal",
+            "escalation"
+          ]
+        },
+        "input": { "type": "object", "additionalProperties": true },
+        "output": { "type": "object", "additionalProperties": true },
+        "model": { "type": "string" },
+        "rationaleRef": { "type": "string" },
+        "humanReviewed": { "type": "boolean" },
+        "reviewer": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "humanReviewed": { "const": true } } },
+          "then": { "required": ["reviewer"] }
+        }
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "retention": {
+          "type": "object",
+          "properties": {
+            "transcript": { "type": "string" },
+            "audio": { "type": "string" },
+            "embeddings": { "type": "string" }
+          }
+        },
+        "redaction": {
+          "type": "object",
+          "properties": {
+            "pii": { "type": "string", "enum": ["mask", "drop", "none"] },
+            "pci": { "type": "string", "enum": ["mask", "drop", "none"] },
+            "phi": { "type": "string", "enum": ["mask", "drop", "none"] }
+          }
+        },
+        "guardrails": { "type": "array", "items": { "type": "string" } },
+        "dataResidency": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z]{2,4}$" }
+        }
+      }
+    },
+    "control": {
+      "type": "object",
+      "required": ["verb", "nonce"],
+      "properties": {
+        "verb": {
+          "type": "string",
+          "enum": ["PROPOSE", "ACCEPT", "REJECT", "ASSUME", "RETURN", "INCIDENT"]
+        },
+        "reason": { "type": "string" },
+        "fallback": {
+          "type": "object",
+          "properties": {
+            "verb": { "type": "string" },
+            "after": { "type": "string" },
+            "acceptableReasons": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "refs": {
+          "type": "object",
+          "properties": {
+            "proposedId": { "type": "string" }
+          }
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16,}$"
+        }
+      }
+    },
+    "transparency": {
+      "type": "object",
+      "required": ["logId", "leafHash"],
+      "properties": {
+        "logId": { "type": "string" },
+        "leafHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "required": ["kid", "alg", "jws"],
+      "properties": {
+        "kid": { "type": "string" },
+        "alg": { "type": "string", "enum": ["EdDSA", "ML-DSA-65"] },
+        "jws": { "type": "string" }
+      }
+    }
+  }
+}

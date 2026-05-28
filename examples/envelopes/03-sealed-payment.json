@@ -1,0 +1,128 @@
+{
+  "ohp": "0.1",
+  "conformance": "sealed",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3KB",
+  "issuedAt": "2026-05-28T14:02:00Z",
+  "notBefore": "2026-05-28T14:02:00Z",
+  "notAfter":  "2026-05-28T14:07:00Z",
+
+  "issuer": {
+    "vendor": "vendor-a",
+    "agentId": "asst_pay3",
+    "region": "uk-west",
+    "did": "did:web:agents.example.com:asst_pay3",
+    "federation": "did:web:federation.openhandoffprotocol.org",
+    "aiRole": "deployer"
+  },
+
+  "audience": {
+    "vendor": "vendor-b",
+    "did": "did:web:cc.example.com",
+    "aiRole": "deployer",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "sealed",
+    "recipientKeys": [
+      {
+        "kid": "vb_2026_05_x25519",
+        "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305"
+      }
+    ]
+  },
+
+  "session": {
+    "callId": "callid_2026_PAY_3F",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "startedAt": "2026-05-28T13:58:50Z",
+    "media": {
+      "rtpFingerprint": "sha256:c4b9d8e1a2f3046789ab4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9012345678abcd",
+      "sdpHints": { "codecs": ["OPUS/48000/2"] }
+    }
+  },
+
+  "caller": {
+    "assurance": {
+      "method": "voice-biometric+otp",
+      "ial": "IAL2", "aal": "AAL3", "fal": "FAL2",
+      "lastStepUpAt": "2026-05-28T14:01:12Z",
+      "idp": "did:web:idp.bank.example.com",
+      "proofJws": "eyJhbGciOiJFZERTQSIsImtpZCI6ImlkcF8yMDI2XzA1In0..PLACEHOLDER_IDP_PROOF"
+    },
+    "identity": {
+      "sdJwtVc": "eyJhbGciOiJFZERTQSIsInR5cCI6InNkLWp3dCJ9..PLACEHOLDER_SD_JWT_VC",
+      "disclosures": ["WyJhYmMxMjMiLCJnaXZlbl9uYW1lIiwiQWxleCJd", "WyJkZWY0NTYiLCJhY2NvdW50UmVmIiwiYWNjXzc3ODEiXQ"],
+      "claimsRevealed": ["given_name", "accountRef"]
+    },
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_99x_payments",
+        "purpose": "ai-vendor-handoff",
+        "scope":   ["transcript.summary", "intent.slots:non-phi", "payment.dispute:sealed"],
+        "lawfulBasis": "gdpr.art6.1.b",
+        "specialCategoryBasis": null,
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "dispute_charge", "confidence": 0.91 },
+    "stack": [
+      { "name": "authenticate", "status": "satisfied" }
+    ],
+    "slots": {
+      "chargeId": "ch_7781",
+      "amountGBP": 42.50,
+      "disputeReason": "unauthorised",
+      "card": { "ref": "tokenex:tok_c4f2" }
+    }
+  },
+
+  "sealed": {
+    "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305",
+    "recipients": [
+      { "kid": "vb_2026_05_x25519", "enc": "PLACEHOLDER_HPKE_ENCAPSULATED_KEY_VENDOR_B" }
+    ],
+    "ciphertext": "PLACEHOLDER_AEAD_CIPHERTEXT_CONTAINING_PAYMENT_INSTRUCTION_DETAILS",
+    "fields": ["payment.disputeDetail", "caller.vulnerable"]
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop", "version": "1.1" },
+    "turns": [
+      { "t": "2026-05-28T13:59:50Z", "role": "caller", "text": "I need to dispute a charge from yesterday." },
+      { "t": "2026-05-28T14:00:02Z", "role": "agent",  "text": "Was it a card payment?" },
+      { "t": "2026-05-28T14:00:15Z", "role": "caller", "text": "Yes, ending [REDACTED:pan-last4]." }
+    ],
+    "summary": "Caller authenticated at AAL3; raising chargeback for ch_7781 (GBP 42.50)."
+  },
+
+  "memory": {
+    "modelAllowlist": ["openai:gpt-4o", "anthropic:claude-3.7"],
+    "facts": ["prefers email follow-up"]
+  },
+
+  "policy": {
+    "retention":   { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction":   { "pii": "mask", "pci": "drop", "phi": "mask" },
+    "guardrails":  ["no-cross-sell", "no-payment-collection"],
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "human-requested",
+    "fallback": { "verb": "RETURN", "after": "PT60S" },
+    "nonce": "1a2b3c4d5e6f7081"
+  },
+
+  "signatures": [
+    {
+      "kid": "ck_vendor_a_2026_05_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6ImNrX3ZlbmRvcl9hXzIwMjZfMDVfZWQifQ..PLACEHOLDER_SIGNATURE_SEALED"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/OpenHandoffProtocol/OHP/security/advisories/new
+    about: Report a security vulnerability privately. Do NOT open a public issue.
+  - name: General enquiries
+    url: mailto:enquiries@cloud.ax
+    about: Non-issue, non-security questions about OHP.
+  - name: Discussions
+    url: https://github.com/OpenHandoffProtocol/OHP/discussions
+    about: Brainstorm, ask questions, or propose ideas before opening a formal issue.

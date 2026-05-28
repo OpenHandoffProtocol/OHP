@@ -1,0 +1,232 @@
+{
+  "ohp": "0.1",
+  "conformance": "regulated",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3KC",
+  "issuedAt": "2026-05-28T15:10:00Z",
+  "notBefore": "2026-05-28T15:10:00Z",
+  "notAfter":  "2026-05-28T15:15:00Z",
+
+  "issuer": {
+    "vendor": "vendor-a",
+    "agentId": "asst_hc4",
+    "region": "uk-west",
+    "did": "did:web:agents.example.com:asst_hc4",
+    "federation": "did:web:federation.openhandoffprotocol.org",
+    "aiRole": "deployer",
+    "attestation": { "type": "tdx", "evidence": "ohp-eat:PLACEHOLDER_TDX_EAT" }
+  },
+
+  "audience": {
+    "vendor": "vendor-c",
+    "did": "did:web:nhs-trust.example.uk",
+    "aiRole": "deployer",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "regulated",
+    "recipientKeys": [
+      {
+        "kid": "vc_2026_05_x25519",
+        "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305"
+      }
+    ]
+  },
+
+  "aiSystem": {
+    "id": "urn:vendor-a:asst:hc4-2026-05",
+    "version": "2026.05.27",
+    "modelCardSha256": "sha256:a1b2c3d4e5f6071829a3b4c5d6e7f80910a1b2c3d4e5f6070819a2b3c4d5e6f7",
+    "riskClass": "high",
+    "annexIIIClause": "5(d)",
+    "ceConformity": {
+      "assessmentRoute": "self",
+      "notifiedBodyId": null,
+      "declarationUrl": "https://docs.example.com/doc/CE-asst-hc4-2026-05.pdf",
+      "validUntil": "2027-05-01"
+    },
+    "gpaiChain": [
+      { "provider": "example-gpai", "model": "example-llm-2026-04", "systemicRisk": true,
+        "policyUrl": "https://example.com/policies/gpai" },
+      { "provider": "example-tts", "model": "example-voice-2026-01", "systemicRisk": false }
+    ],
+    "postMarketEndpoint": "https://api.example.com/v1/ohp/post-market"
+  },
+
+  "governance": {
+    "aiia": {
+      "id": "aiia:vendor-a:asst-hc4:2026-04",
+      "lastReviewedAt": "2026-04-12",
+      "residualRisk": "low",
+      "uri": "ohp://aiia/vendor-a/asst-hc4"
+    },
+    "fria": {
+      "id": "fria:vendor-c:asst-hc4:2026-04",
+      "completedAt": "2026-04-18",
+      "uri": "ohp://fria/vendor-c/asst-hc4"
+    },
+    "prohibited": {
+      "subliminalManipulation": false,
+      "socialScoring": false,
+      "rtBiometricIdPublic": false,
+      "emotionRecognitionWorkplace": false,
+      "sensitiveBiometricCategorisation": false,
+      "attestationJws": "eyJhbGciOiJFZERTQSJ9..PLACEHOLDER_PROHIBITED_ATTESTATION"
+    },
+    "art50Disclosure": {
+      "disclosed": true,
+      "at": "2026-05-28T15:05:05Z",
+      "modality": "tts-preamble",
+      "language": "en-GB",
+      "transcript": "You're speaking with an AI assistant on behalf of the clinic; a clinician can take over at any time.",
+      "ack": "implicit-continuation",
+      "proofJws": "eyJhbGciOiJFZERTQSJ9..PLACEHOLDER_ART50_PROOF"
+    },
+    "art86Explanation": {
+      "available": true,
+      "endpoint": "https://api.example.com/v1/ohp/explain"
+    }
+  },
+
+  "oversight": {
+    "mode": "human-on-the-loop",
+    "supervisor": {
+      "presence": "live",
+      "identity": "clinician:9k77",
+      "channelRef": "ohp:supervisor-bus"
+    },
+    "escalation": {
+      "triggers": ["intent.confidence<0.6", "slot.symptomSeverity>=high"],
+      "verb": "PROPOSE",
+      "target": "clinician-queue:tier-2"
+    },
+    "lastReviewAt": "2026-05-28T15:09:30Z"
+  },
+
+  "session": {
+    "callId": "callid_2026_HC4_001",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "startedAt": "2026-05-28T15:05:00Z",
+    "media": {
+      "rtpFingerprint": "sha256:e1f2a3b4c5d6e7f80910a1b2c3d4e5f6070819a2b3c4d5e6f70819a2b3c4d5e6",
+      "sdpHints": { "codecs": ["OPUS/48000/2"] }
+    }
+  },
+
+  "caller": {
+    "assurance": {
+      "method": "voice-biometric+hard-token",
+      "ial": "IAL3", "aal": "AAL3", "fal": "FAL2",
+      "lastStepUpAt": "2026-05-28T15:08:00Z",
+      "idp": "did:web:idp.nhs-login.example.uk",
+      "proofJws": "eyJhbGciOiJFZERTQSJ9..PLACEHOLDER_HEALTHCARE_IDP_PROOF"
+    },
+    "identity": {
+      "sdJwtVc": "eyJhbGciOiJFZERTQSIsInR5cCI6InNkLWp3dCJ9..PLACEHOLDER_HEALTHCARE_VC",
+      "disclosures": ["WyJ4eHgxMjMiLCJnaXZlbl9uYW1lIiwiSmFtaWUiXQ", "WyJ5eXk0NTYiLCJuaHNJZCIsIm5oc183ODkiXQ"],
+      "claimsRevealed": ["given_name", "nhsId"]
+    },
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_healthcare_2026_05",
+        "purpose": "ai-vendor-handoff",
+        "scope":   ["transcript.summary", "intent.slots:non-phi", "healthcare.fhirRef:sealed"],
+        "lawfulBasis": "gdpr.art6.1.e",
+        "specialCategoryBasis": "gdpr.art9.2.h",
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "appointment_followup", "confidence": 0.93 },
+    "stack": [
+      { "name": "authenticate", "status": "satisfied" },
+      { "name": "verify_clinician_required", "status": "satisfied" }
+    ],
+    "slots": {
+      "appointmentRef": "appt_55b2",
+      "followupReason": "test-results"
+    }
+  },
+
+  "sealed": {
+    "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305",
+    "recipients": [
+      { "kid": "vc_2026_05_x25519", "enc": "PLACEHOLDER_HPKE_ENCAPSULATED_KEY_NHS" }
+    ],
+    "ciphertext": "PLACEHOLDER_AEAD_CIPHERTEXT_CONTAINING_FHIR_REFERENCES_AND_VULNERABLE_FLAG",
+    "fields": ["healthcare.fhirRef", "caller.vulnerable"]
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop+phi-mask", "version": "1.1" },
+    "turns": [
+      { "t": "2026-05-28T15:06:00Z", "role": "agent",  "text": "Hello, you're speaking with Cloudax AI on behalf of [REDACTED:clinic-name]. How can I help?" },
+      { "t": "2026-05-28T15:06:08Z", "role": "caller", "text": "I'd like to discuss my [REDACTED:phi] test results." },
+      { "t": "2026-05-28T15:08:30Z", "role": "agent",  "text": "I'll connect you with a clinician now." }
+    ],
+    "summary": "Authenticated caller (nhsId disclosed) requesting clinician follow-up on test results; escalating per Art 14 policy."
+  },
+
+  "memory": {
+    "modelAllowlist": ["openai:gpt-4o"],
+    "facts": ["prefers callback after 17:00"]
+  },
+
+  "decisions": [
+    {
+      "id": "dec_01HZX1A0R5N9V8W1QYK0XQM3R3",
+      "at": "2026-05-28T15:07:42Z",
+      "type": "intent.classification",
+      "input":  { "turnIds": ["t_02", "t_03"] },
+      "output": { "intent": "appointment_followup", "confidence": 0.93 },
+      "model":  "urn:vendor-a:asst:hc4-2026-05",
+      "rationaleRef": "ohp:rationale:dec_01HZX1A0R5N9V8W1QYK0XQM3R3",
+      "humanReviewed": false
+    },
+    {
+      "id": "dec_01HZX1A0R5N9V8W1QYK0XQM3R4",
+      "at": "2026-05-28T15:08:25Z",
+      "type": "routing.decision",
+      "input":  { "intent": "appointment_followup", "slot.followupReason": "test-results" },
+      "output": { "target": "clinician-queue:tier-2", "reason": "policy: test-results require clinician" },
+      "model":  "urn:vendor-a:asst:hc4-2026-05",
+      "rationaleRef": "ohp:rationale:dec_01HZX1A0R5N9V8W1QYK0XQM3R4",
+      "humanReviewed": true,
+      "reviewer": "clinician:9k77"
+    }
+  ],
+
+  "policy": {
+    "retention":   { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction":   { "pii": "mask", "pci": "drop", "phi": "mask" },
+    "guardrails":  ["no-cross-sell", "no-clinical-advice-from-AI"],
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "policy",
+    "fallback": { "verb": "RETURN", "after": "PT60S" },
+    "nonce": "2c3d4e5f60718293"
+  },
+
+  "transparency": {
+    "logId": "rekor.openhandoffprotocol.org",
+    "leafHash": "sha256:f1e2d3c4b5a6978869708f1e2d3c4b5a6978869708f1e2d3c4b5a6978869708f"
+  },
+
+  "signatures": [
+    {
+      "kid": "ck_vendor_a_2026_05_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6ImNrX3ZlbmRvcl9hXzIwMjZfMDVfZWQifQ..PLACEHOLDER_ED25519_SIGNATURE"
+    },
+    {
+      "kid": "ck_vendor_a_2026_05_pq",
+      "alg": "ML-DSA-65",
+      "jws": "eyJhbGciOiJNTC1EU0EtNjUiLCJraWQiOiJja192ZW5kb3JfYV8yMDI2XzA1X3BxIn0..PLACEHOLDER_ML_DSA_SIGNATURE"
+    }
+  ]
+}

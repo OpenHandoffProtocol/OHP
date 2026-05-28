@@ -1,0 +1,10 @@
+{
+  "outcome": "accept",
+  "now": "2026-05-28T13:43:00Z",
+  "tier": "core",
+  "verb": "PROPOSE",
+  "schemaValid": true,
+  "freshnessOk": true,
+  "tierGateOk": true,
+  "notes": "Minimal valid Core-tier envelope. No signature required at Core. No sealed fields."
+}

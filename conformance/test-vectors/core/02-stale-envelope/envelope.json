@@ -1,0 +1,35 @@
+{
+  "ohp": "0.1",
+  "conformance": "core",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3KZ",
+  "issuedAt": "2026-05-28T12:00:00Z",
+  "notAfter":  "2026-05-28T12:05:00Z",
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_02",
+    "region": "uk-west"
+  },
+  "audience": {
+    "vendor": "test-receiver",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "core"
+  },
+  "session": {
+    "callId": "callid_fixture_02",
+    "channel": "voice/pstn",
+    "locale": "en-GB"
+  },
+  "intent": {
+    "current": { "name": "faq_lookup", "confidence": 0.81 },
+    "stack": [],
+    "slots": {}
+  },
+  "transcript": {
+    "summary": "FAQ lookup."
+  },
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "skill-routing",
+    "nonce": "fedcba9876543210"
+  }
+}

@@ -1,0 +1,270 @@
+; OHP Conversation State Envelope — CDDL (Concise Data Definition Language)
+; for canonical CBOR serialisation.
+;
+; This CDDL describes the signing surface used by detached JWS signatures.
+; See spec/ohp-0.1.md §5.2 for canonicalisation rules.
+;
+; Authoritative JSON Schema: schemas/ohp-envelope.schema.json
+; Spec version: 0.1
+
+start = envelope
+
+envelope = {
+  ohp:           "0.1",
+  conformance:   tier,
+  id:            ulid,
+  issuedAt:      rfc3339,
+  ? notBefore:   rfc3339,
+  notAfter:      rfc3339,
+  issuer:        issuer-block,
+  audience:      audience-block,
+  ? aiSystem:    ai-system-block,
+  ? governance:  governance-block,
+  ? oversight:   oversight-block,
+  session:       session-block,
+  ? caller:      caller-block,
+  intent:        intent-block,
+  ? sealed:      sealed-block,
+  ? transcript:  transcript-block,
+  ? memory:      memory-block,
+  ? decisions:   [+ decision-block],
+  ? policy:      policy-block,
+  control:       control-block,
+  ? transparency: transparency-block,
+  ? signatures:  [+ signature-block]
+}
+
+tier = "core" / "signed" / "sealed" / "regulated"
+
+ulid = tstr .regexp "^cse_[0-9A-HJKMNP-TV-Z]{26}$"
+dec-ulid = tstr .regexp "^dec_[0-9A-HJKMNP-TV-Z]{26}$"
+
+rfc3339 = #6.0(tstr)   ; tag 0 = standard date-time string
+
+did = tstr .regexp "^did:[a-z0-9]+:.+$"
+
+sha256hex = tstr .regexp "^sha256:[0-9a-f]{64}$"
+
+ai-role = "provider" / "deployer" / "importer" / "distributor"
+
+risk-class = "prohibited" / "high" / "limited" / "minimal"
+
+issuer-block = {
+  vendor: tstr,
+  agentId: tstr,
+  region: tstr,
+  ? did: did,
+  ? federation: did,
+  ? aiRole: ai-role,
+  ? attestation: { type: tstr, evidence: tstr }
+}
+
+audience-block = {
+  vendor: tstr,
+  ? did: did,
+  ? aiRole: ai-role,
+  purpose: tstr,
+  minTier: tier,
+  ? recipientKeys: [+ { kid: tstr, alg: tstr }]
+}
+
+ai-system-block = {
+  id: tstr,
+  version: tstr,
+  modelCardSha256: sha256hex,
+  riskClass: risk-class,
+  ? annexIIIClause: tstr,
+  ? ceConformity: {
+      assessmentRoute: ("self" / "notified-body"),
+      ? notifiedBodyId: tstr / null,
+      declarationUrl: tstr,
+      ? validUntil: tstr
+    },
+  ? gpaiChain: [+ {
+      provider: tstr,
+      model: tstr,
+      systemicRisk: bool,
+      ? policyUrl: tstr
+    }],
+  ? postMarketEndpoint: tstr
+}
+
+governance-block = {
+  ? aiia: {
+      id: tstr,
+      lastReviewedAt: tstr,
+      ? residualRisk: ("low" / "medium" / "high"),
+      uri: tstr
+    },
+  ? fria: {
+      id: tstr,
+      completedAt: tstr,
+      uri: tstr
+    },
+  ? prohibited: {
+      subliminalManipulation: bool,
+      socialScoring: bool,
+      rtBiometricIdPublic: bool,
+      emotionRecognitionWorkplace: bool,
+      sensitiveBiometricCategorisation: bool,
+      attestationJws: tstr
+    },
+  ? art50Disclosure: {
+      disclosed: bool,
+      at: rfc3339,
+      modality: ("voice-prompt" / "tts-preamble" / "dtmf"),
+      language: tstr,
+      transcript: tstr,
+      ack: ("explicit-yes" / "implicit-continuation"),
+      proofJws: tstr
+    },
+  ? art86Explanation: {
+      available: bool,
+      endpoint: tstr
+    }
+}
+
+oversight-block = {
+  mode: ("human-in-the-loop" / "human-on-the-loop" / "human-in-command"),
+  ? supervisor: {
+      ? presence: ("live" / "available" / "none"),
+      ? identity: tstr,
+      ? channelRef: tstr
+    },
+  ? escalation: {
+      ? triggers: [* tstr],
+      ? verb: verb,
+      ? target: tstr
+    },
+  ? lastReviewAt: rfc3339
+}
+
+session-block = {
+  callId: tstr,
+  channel: ("voice/pstn" / "voice/webrtc" / "voice/sip" /
+            "chat/web" / "chat/sms" / "video/webrtc"),
+  locale: tstr,
+  ? startedAt: rfc3339,
+  ? media: {
+      ? rtpFingerprint: sha256hex,
+      ? sdpHints: { ? codecs: [* tstr] }
+    }
+}
+
+caller-block = {
+  ? assurance: {
+      method: tstr,
+      ial: ("IAL1" / "IAL2" / "IAL3"),
+      aal: ("AAL1" / "AAL2" / "AAL3"),
+      fal: ("FAL1" / "FAL2" / "FAL3"),
+      ? lastStepUpAt: rfc3339,
+      idp: did,
+      proofJws: tstr
+    },
+  ? identity: {
+      ? sdJwtVc: tstr,
+      ? disclosures: [* tstr],
+      ? claimsRevealed: [* tstr]
+    },
+  ? consent: [+ consent-receipt]
+}
+
+consent-receipt = {
+  receiptId: tstr,
+  purpose: tstr,
+  scope: [+ tstr],
+  lawfulBasis: tstr,
+  ? specialCategoryBasis: tstr / null,
+  jurisdiction: tstr .regexp "^[A-Z]{2}$",
+  ? transferMechanism: ("scc" / "dpf" / "adequacy" / "uk-adequacy" / "none")
+}
+
+intent-block = {
+  current: {
+    name: tstr,
+    confidence: float
+  },
+  stack: [* {
+    name: tstr,
+    status: ("satisfied" / "pending" / "failed")
+  }],
+  slots: { * tstr => any }
+}
+
+sealed-block = {
+  alg: "HPKE/X25519-SHA256-CHACHA20POLY1305",
+  recipients: [+ { kid: tstr, enc: tstr }],
+  ciphertext: tstr,
+  fields: [+ tstr]
+}
+
+transcript-block = {
+  ? format: "ohp.turns/v1",
+  ? redaction: { policy: tstr, version: tstr },
+  ? turns: [+ {
+      t: tstr,
+      role: ("caller" / "agent" / "system"),
+      text: tstr
+    }],
+  summary: tstr
+}
+
+memory-block = {
+  ? modelAllowlist: [+ tstr],
+  ? embeddings: [+ { model: tstr, vectorRef: tstr }],
+  ? facts: [+ tstr]
+}
+
+decision-block = {
+  id: dec-ulid,
+  at: rfc3339,
+  type: ("intent.classification" / "slot.assignment" / "routing.decision" /
+         "payment.authorisation" / "assurance.step-up" / "tool.call" /
+         "policy.refusal" / "escalation"),
+  input: { * tstr => any },
+  output: { * tstr => any },
+  ? model: tstr,
+  ? rationaleRef: tstr,
+  ? humanReviewed: bool,
+  ? reviewer: tstr
+}
+
+policy-block = {
+  ? retention: {
+      ? transcript: tstr,
+      ? audio: tstr,
+      ? embeddings: tstr
+    },
+  ? redaction: {
+      ? pii: ("mask" / "drop" / "none"),
+      ? pci: ("mask" / "drop" / "none"),
+      ? phi: ("mask" / "drop" / "none")
+    },
+  ? guardrails: [+ tstr],
+  ? dataResidency: [+ tstr]
+}
+
+verb = "PROPOSE" / "ACCEPT" / "REJECT" / "ASSUME" / "RETURN" / "INCIDENT"
+
+control-block = {
+  verb: verb,
+  ? reason: tstr,
+  ? fallback: {
+      ? verb: verb,
+      ? after: tstr,
+      ? acceptableReasons: [* tstr]
+    },
+  ? refs: { ? proposedId: tstr },
+  nonce: tstr .regexp "^[0-9a-f]{16,}$"
+}
+
+transparency-block = {
+  logId: tstr,
+  leafHash: sha256hex
+}
+
+signature-block = {
+  kid: tstr,
+  alg: ("EdDSA" / "ML-DSA-65"),
+  jws: tstr
+}

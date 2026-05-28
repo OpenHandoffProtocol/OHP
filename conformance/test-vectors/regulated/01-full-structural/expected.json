@@ -1,0 +1,17 @@
+{
+  "outcome": "structural-only",
+  "v0_1_status": "envelope is structurally valid; cryptographic verification and transparency log inclusion deferred to v0.2.",
+  "schemaValid": true,
+  "regulatedBlocksPresent": [
+    "aiSystem",
+    "governance.aiia",
+    "governance.fria",
+    "governance.prohibited",
+    "governance.art50Disclosure",
+    "governance.art86Explanation",
+    "oversight",
+    "decisions",
+    "transparency"
+  ],
+  "signatureAlgsPresent": ["EdDSA", "ML-DSA-65"]
+}

@@ -1,0 +1,183 @@
+{
+  "ohp": "0.1",
+  "conformance": "regulated",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3RG",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notBefore": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_reg_01",
+    "region": "uk-west",
+    "did": "did:web:test.example.org:agent_reg_01",
+    "federation": "did:web:test.example.org:federation",
+    "aiRole": "deployer"
+  },
+
+  "audience": {
+    "vendor": "test-receiver",
+    "did": "did:web:test.example.org:receiver",
+    "aiRole": "deployer",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "regulated",
+    "recipientKeys": [
+      { "kid": "rcv_2026_05_x25519", "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305" }
+    ]
+  },
+
+  "aiSystem": {
+    "id": "urn:test-sender:asst:reg01-2026-05",
+    "version": "2026.05.27",
+    "modelCardSha256": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+    "riskClass": "high",
+    "annexIIIClause": "5(b)",
+    "ceConformity": {
+      "assessmentRoute": "self",
+      "notifiedBodyId": null,
+      "declarationUrl": "https://docs.example.org/CE-test-reg01.pdf",
+      "validUntil": "2027-05-01"
+    },
+    "gpaiChain": [
+      { "provider": "test-gpai", "model": "test-model-1", "systemicRisk": false }
+    ],
+    "postMarketEndpoint": "https://api.example.org/v1/ohp/post-market"
+  },
+
+  "governance": {
+    "aiia": {
+      "id": "aiia:test-sender:reg01:2026-04",
+      "lastReviewedAt": "2026-04-12",
+      "residualRisk": "low",
+      "uri": "ohp://aiia/test-sender/reg01"
+    },
+    "fria": {
+      "id": "fria:test-sender:reg01:2026-04",
+      "completedAt": "2026-04-18",
+      "uri": "ohp://fria/test-sender/reg01"
+    },
+    "prohibited": {
+      "subliminalManipulation": false,
+      "socialScoring": false,
+      "rtBiometricIdPublic": false,
+      "emotionRecognitionWorkplace": false,
+      "sensitiveBiometricCategorisation": false,
+      "attestationJws": "eyJ..PLACEHOLDER_PROHIBITED_ATTESTATION"
+    },
+    "art50Disclosure": {
+      "disclosed": true,
+      "at": "2026-05-28T13:38:05Z",
+      "modality": "tts-preamble",
+      "language": "en-GB",
+      "transcript": "You're speaking with a test AI assistant.",
+      "ack": "implicit-continuation",
+      "proofJws": "eyJ..PLACEHOLDER_ART50_PROOF"
+    },
+    "art86Explanation": {
+      "available": true,
+      "endpoint": "https://api.example.org/v1/ohp/explain"
+    }
+  },
+
+  "oversight": {
+    "mode": "human-on-the-loop",
+    "supervisor": {
+      "presence": "live",
+      "identity": "test-supervisor:01",
+      "channelRef": "ohp:test-supervisor-bus"
+    },
+    "escalation": {
+      "triggers": ["intent.confidence<0.6"],
+      "verb": "PROPOSE",
+      "target": "human-queue:tier-2"
+    },
+    "lastReviewAt": "2026-05-28T13:40:00Z"
+  },
+
+  "session": {
+    "callId": "callid_fixture_reg_01",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "media": {
+      "rtpFingerprint": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  },
+
+  "caller": {
+    "assurance": {
+      "method": "voice-biometric+hard-token",
+      "ial": "IAL2", "aal": "AAL3", "fal": "FAL2",
+      "idp": "did:web:test.example.org:idp",
+      "proofJws": "eyJ..PLACEHOLDER_IDP_PROOF_REG"
+    },
+    "identity": {
+      "sdJwtVc": "eyJ..PLACEHOLDER_SD_JWT_VC_REG",
+      "claimsRevealed": ["given_name", "accountRef"]
+    },
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_test_reg_01",
+        "purpose": "ai-vendor-handoff",
+        "scope": ["transcript.summary", "intent.slots:non-phi"],
+        "lawfulBasis": "gdpr.art6.1.b",
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "credit_application_followup", "confidence": 0.91 },
+    "stack": [{ "name": "authenticate", "status": "satisfied" }],
+    "slots": { "accountRef": "acc_test_reg_001" }
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop+phi-mask", "version": "1.1" },
+    "summary": "Authenticated caller (AAL3); high-risk Annex III 5(b) routing pending."
+  },
+
+  "decisions": [
+    {
+      "id": "dec_01HZX1A0R5N9V8W1QYK0XQM3R3",
+      "at": "2026-05-28T13:41:42Z",
+      "type": "intent.classification",
+      "input": { "turnIds": ["t_03","t_04"] },
+      "output": { "intent": "credit_application_followup", "confidence": 0.91 },
+      "model": "urn:test-sender:asst:reg01-2026-05",
+      "humanReviewed": false
+    }
+  ],
+
+  "policy": {
+    "retention": { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction": { "pii": "mask", "pci": "drop", "phi": "mask" },
+    "guardrails": ["no-cross-sell"],
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "policy",
+    "nonce": "deadbeefcafef00d"
+  },
+
+  "transparency": {
+    "logId": "rekor.openhandoffprotocol.org",
+    "leafHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+  },
+
+  "signatures": [
+    {
+      "kid": "test_reg_01_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3RfcmVnXzAxX2VkIn0..PLACEHOLDER_ED_REG"
+    },
+    {
+      "kid": "test_reg_01_pq",
+      "alg": "ML-DSA-65",
+      "jws": "eyJhbGciOiJNTC1EU0EtNjUiLCJraWQiOiJ0ZXN0X3JlZ18wMV9wcSJ9..PLACEHOLDER_PQ_REG"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "ohp": "0.1",
+  "conformance": "core",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3K9",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_01",
+    "region": "uk-west"
+  },
+  "audience": {
+    "vendor": "test-receiver",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "core"
+  },
+  "session": {
+    "callId": "callid_fixture_01",
+    "channel": "voice/pstn",
+    "locale": "en-GB"
+  },
+  "intent": {
+    "current": { "name": "store_hours_lookup", "confidence": 0.88 },
+    "stack": [],
+    "slots": {}
+  },
+  "transcript": {
+    "summary": "Caller asked for store hours; routing handoff."
+  },
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "skill-routing",
+    "nonce": "0123456789abcdef"
+  }
+}

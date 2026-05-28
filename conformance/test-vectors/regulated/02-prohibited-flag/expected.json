@@ -1,0 +1,8 @@
+{
+  "outcome": "reject",
+  "now": "2026-05-28T13:43:00Z",
+  "rejectReason": "prohibited-practice",
+  "firstFailingStep": 8,
+  "stepDescription": "governance.prohibited.subliminalManipulation = true",
+  "notes": "Schema validation MUST pass; freshness and signatures (if checked) MUST pass; the rejection is specifically because the prohibited check at step 8 finds an asserted prohibited capability."
+}

@@ -1,0 +1,160 @@
+{
+  "ohp": "0.1",
+  "conformance": "regulated",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3RH",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notBefore": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_reg_02",
+    "region": "uk-west",
+    "did": "did:web:test.example.org:agent_reg_02",
+    "federation": "did:web:test.example.org:federation",
+    "aiRole": "deployer"
+  },
+
+  "audience": {
+    "vendor": "test-receiver",
+    "did": "did:web:test.example.org:receiver",
+    "aiRole": "deployer",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "regulated",
+    "recipientKeys": [
+      { "kid": "rcv_2026_05_x25519", "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305" }
+    ]
+  },
+
+  "aiSystem": {
+    "id": "urn:test-sender:asst:reg02-2026-05",
+    "version": "2026.05.27",
+    "modelCardSha256": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+    "riskClass": "high",
+    "annexIIIClause": "5(b)",
+    "ceConformity": {
+      "assessmentRoute": "self",
+      "notifiedBodyId": null,
+      "declarationUrl": "https://docs.example.org/CE-test-reg02.pdf",
+      "validUntil": "2027-05-01"
+    }
+  },
+
+  "governance": {
+    "aiia": {
+      "id": "aiia:test-sender:reg02:2026-04",
+      "lastReviewedAt": "2026-04-12",
+      "residualRisk": "low",
+      "uri": "ohp://aiia/test-sender/reg02"
+    },
+    "fria": {
+      "id": "fria:test-sender:reg02:2026-04",
+      "completedAt": "2026-04-18",
+      "uri": "ohp://fria/test-sender/reg02"
+    },
+    "prohibited": {
+      "subliminalManipulation": true,
+      "socialScoring": false,
+      "rtBiometricIdPublic": false,
+      "emotionRecognitionWorkplace": false,
+      "sensitiveBiometricCategorisation": false,
+      "attestationJws": "eyJ..PLACEHOLDER_PROHIBITED_ATTESTATION_HOSTILE"
+    },
+    "art50Disclosure": {
+      "disclosed": true,
+      "at": "2026-05-28T13:38:05Z",
+      "modality": "tts-preamble",
+      "language": "en-GB",
+      "transcript": "Test disclosure.",
+      "ack": "implicit-continuation",
+      "proofJws": "eyJ..PLACEHOLDER_ART50_PROOF_HOSTILE"
+    },
+    "art86Explanation": {
+      "available": true,
+      "endpoint": "https://api.example.org/v1/ohp/explain"
+    }
+  },
+
+  "oversight": {
+    "mode": "human-on-the-loop",
+    "supervisor": { "presence": "live", "identity": "test-supervisor:02", "channelRef": "ohp:test-supervisor-bus" },
+    "escalation": { "triggers": ["intent.confidence<0.6"], "verb": "PROPOSE", "target": "human-queue:tier-2" },
+    "lastReviewAt": "2026-05-28T13:40:00Z"
+  },
+
+  "session": {
+    "callId": "callid_fixture_reg_02",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "media": { "rtpFingerprint": "sha256:4444444444444444444444444444444444444444444444444444444444444444" }
+  },
+
+  "caller": {
+    "assurance": {
+      "method": "voice-biometric+hard-token",
+      "ial": "IAL2", "aal": "AAL3", "fal": "FAL2",
+      "idp": "did:web:test.example.org:idp",
+      "proofJws": "eyJ..PLACEHOLDER_IDP_PROOF_REG_02"
+    },
+    "identity": {
+      "sdJwtVc": "eyJ..PLACEHOLDER_SD_JWT_VC_REG_02",
+      "claimsRevealed": ["given_name"]
+    },
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_test_reg_02",
+        "purpose": "ai-vendor-handoff",
+        "scope": ["transcript.summary"],
+        "lawfulBasis": "gdpr.art6.1.b",
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "test_intent", "confidence": 0.5 },
+    "stack": [],
+    "slots": {}
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop+phi-mask", "version": "1.1" },
+    "summary": "Hostile-issuer test fixture; prohibited flag asserted."
+  },
+
+  "decisions": [
+    {
+      "id": "dec_01HZX1A0R5N9V8W1QYK0XQM3R4",
+      "at": "2026-05-28T13:41:42Z",
+      "type": "intent.classification",
+      "input": { "turnIds": ["t_01"] },
+      "output": { "intent": "test_intent", "confidence": 0.5 },
+      "model": "urn:test-sender:asst:reg02-2026-05",
+      "humanReviewed": false
+    }
+  ],
+
+  "policy": {
+    "retention": { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction": { "pii": "mask", "pci": "drop", "phi": "mask" },
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "policy",
+    "nonce": "0badf00ddeadbeef"
+  },
+
+  "transparency": {
+    "logId": "rekor.openhandoffprotocol.org",
+    "leafHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+  },
+
+  "signatures": [
+    { "kid": "test_reg_02_ed", "alg": "EdDSA", "jws": "eyJ..PLACEHOLDER_ED_REG_02" },
+    { "kid": "test_reg_02_pq", "alg": "ML-DSA-65", "jws": "eyJ..PLACEHOLDER_PQ_REG_02" }
+  ]
+}

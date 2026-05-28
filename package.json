@@ -1,0 +1,18 @@
+{
+  "name": "open-handoff-protocol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dev tooling for the Open Handoff Protocol (OHP) specification. The spec itself is Apache-2.0; see LICENSE.",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-envelopes.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

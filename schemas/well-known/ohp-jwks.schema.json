@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ohp.dev/schemas/well-known/ohp-jwks.schema.json",
+  "title": "OHP JWK Set",
+  "description": "Schema for /.well-known/ohp-jwks.json, the published JWK Set used by OHP issuers and receivers. Mirrors RFC 7517 §5 with OHP-specific guidance on use claims.",
+  "type": "object",
+  "required": ["keys"],
+  "properties": {
+    "keys": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/jwk" }
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this JWK Set was last published."
+    },
+    "rotationPolicy": {
+      "type": "object",
+      "description": "Declared rotation cadence (informative).",
+      "properties": {
+        "signKeysMaxAgeDays": { "type": "integer", "minimum": 1, "maximum": 90 },
+        "encKeysMaxAgeDays": { "type": "integer", "minimum": 1, "maximum": 30 },
+        "revokedKeyRetentionHours": { "type": "integer", "minimum": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "jwk": {
+      "type": "object",
+      "required": ["kty", "kid", "use"],
+      "properties": {
+        "kty": {
+          "type": "string",
+          "enum": ["OKP", "EC", "RSA", "AKP"],
+          "description": "Key type. OKP for Ed25519 / X25519; AKP for ML-DSA-65."
+        },
+        "kid": {
+          "type": "string",
+          "description": "Key identifier. Stable across the key's life."
+        },
+        "use": {
+          "type": "string",
+          "enum": ["sig", "enc"],
+          "description": "sig = envelope signing; enc = HPKE sealing recipient."
+        },
+        "alg": {
+          "type": "string",
+          "enum": [
+            "EdDSA",
+            "ML-DSA-65",
+            "HPKE/X25519-SHA256-CHACHA20POLY1305"
+          ],
+          "description": "Algorithm this key is used for."
+        },
+        "crv": { "type": "string", "enum": ["Ed25519", "X25519"] },
+        "x": { "type": "string", "description": "Base64url-encoded public key bytes (OKP/EC)." },
+        "y": { "type": "string", "description": "Base64url-encoded public key bytes (EC only)." },
+        "pub": { "type": "string", "description": "Base64url-encoded public key bytes (AKP / ML-DSA)." },
+        "validFrom": { "type": "string", "format": "date-time" },
+        "validUntil": { "type": "string", "format": "date-time" },
+        "revoked": { "type": "boolean", "description": "If true, this key has been revoked but is retained for verification of in-flight envelopes." }
+      }
+    }
+  }
+}

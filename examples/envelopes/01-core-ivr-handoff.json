@@ -1,0 +1,51 @@
+{
+  "ohp": "0.1",
+  "conformance": "core",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3K9",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+
+  "issuer": {
+    "vendor": "vendor-a",
+    "agentId": "ivr_a1",
+    "region": "uk-west"
+  },
+
+  "audience": {
+    "vendor": "vendor-b",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "core"
+  },
+
+  "session": {
+    "callId": "callid_2026_K9_anon",
+    "channel": "voice/pstn",
+    "locale": "en-GB"
+  },
+
+  "intent": {
+    "current": { "name": "store_hours_lookup", "confidence": 0.88 },
+    "stack": [],
+    "slots": {
+      "branchPostcode": "EC1A 1BB"
+    }
+  },
+
+  "transcript": {
+    "summary": "Caller asked for opening hours of EC1A 1BB branch; routing to generalist agent."
+  },
+
+  "policy": {
+    "retention":   { "transcript": "P7D", "audio": "P0D", "embeddings": "P0D" },
+    "redaction":   { "pii": "mask", "pci": "drop", "phi": "drop" },
+    "guardrails":  ["no-cross-sell"],
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "skill-routing",
+    "fallback": { "verb": "RETURN", "after": "PT60S" },
+    "nonce": "9f3b1a2c4d5e6f70"
+  }
+}

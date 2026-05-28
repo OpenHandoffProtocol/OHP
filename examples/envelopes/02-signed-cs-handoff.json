@@ -1,0 +1,89 @@
+{
+  "ohp": "0.1",
+  "conformance": "signed",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3KA",
+  "issuedAt": "2026-05-28T13:50:00Z",
+  "notBefore": "2026-05-28T13:50:00Z",
+  "notAfter":  "2026-05-28T13:55:00Z",
+
+  "issuer": {
+    "vendor": "vendor-a",
+    "agentId": "asst_cs7",
+    "region": "uk-west",
+    "did": "did:web:agents.example.com:asst_cs7"
+  },
+
+  "audience": {
+    "vendor": "vendor-b",
+    "did": "did:web:cc.example.com",
+    "purpose": "human-takeover",
+    "minTier": "signed"
+  },
+
+  "session": {
+    "callId": "callid_2026_K9_acc7781",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "startedAt": "2026-05-28T13:45:08Z",
+    "media": {
+      "rtpFingerprint": "sha256:7a91d6e4b8c3f0125ab9d4e7f612a83c9d05b8e1ff62a47c3a9b1d80f23e7c4b",
+      "sdpHints": { "codecs": ["OPUS/48000/2", "PCMU/8000"] }
+    }
+  },
+
+  "caller": {
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_88a2",
+        "purpose": "human-takeover",
+        "scope":   ["transcript.summary", "intent.slots:non-phi", "accountRef"],
+        "lawfulBasis": "gdpr.art6.1.b",
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "balance_query", "confidence": 0.94 },
+    "stack": [
+      { "name": "authenticate", "status": "satisfied" }
+    ],
+    "slots": {
+      "accountRef": "acc_***7781",
+      "queryType": "balance"
+    }
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop", "version": "1.1" },
+    "turns": [
+      { "t": "2026-05-28T13:46:11Z", "role": "caller", "text": "What's my balance?" },
+      { "t": "2026-05-28T13:46:15Z", "role": "agent",  "text": "Your balance is [REDACTED:amount]. Anything else?" },
+      { "t": "2026-05-28T13:46:30Z", "role": "caller", "text": "Can I speak to a human?" }
+    ],
+    "summary": "Authenticated caller (acc_***7781) reviewed balance; requested human takeover."
+  },
+
+  "policy": {
+    "retention":   { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction":   { "pii": "mask", "pci": "drop", "phi": "drop" },
+    "guardrails":  ["no-cross-sell"],
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "human-requested",
+    "nonce": "8b2c4f6e1a3d5970"
+  },
+
+  "signatures": [
+    {
+      "kid": "ck_vendor_a_2026_05_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6ImNrX3ZlbmRvcl9hXzIwMjZfMDVfZWQifQ..PLACEHOLDER_SIGNATURE_FOR_DOC_EXAMPLE"
+    }
+  ]
+}

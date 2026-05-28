@@ -1,0 +1,55 @@
+{
+  "ohp": "0.1",
+  "conformance": "signed",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3SG",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notBefore": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_signed_01",
+    "region": "uk-west",
+    "did": "did:web:test.example.org:agent_signed_01"
+  },
+  "audience": {
+    "vendor": "test-receiver",
+    "did": "did:web:test.example.org:receiver",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "signed"
+  },
+  "session": {
+    "callId": "callid_fixture_signed_01",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "media": {
+      "rtpFingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "intent": {
+    "current": { "name": "balance_query", "confidence": 0.94 },
+    "stack": [{ "name": "authenticate", "status": "satisfied" }],
+    "slots": { "accountRef": "acc_test_0001" }
+  },
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop", "version": "1.1" },
+    "summary": "Authenticated balance query; routing to human."
+  },
+  "policy": {
+    "retention": { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction": { "pii": "mask", "pci": "drop", "phi": "drop" },
+    "dataResidency": ["GB"]
+  },
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "human-requested",
+    "nonce": "abcdef0123456789"
+  },
+  "signatures": [
+    {
+      "kid": "test_signed_01_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3Rfc2lnbmVkXzAxX2VkIn0..PLACEHOLDER_SIGNATURE_FOR_V0_1_VECTOR"
+    }
+  ]
+}

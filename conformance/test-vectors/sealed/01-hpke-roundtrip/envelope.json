@@ -1,0 +1,101 @@
+{
+  "ohp": "0.1",
+  "conformance": "sealed",
+  "id": "cse_01HZX0R5N9V8W1QYK0XQM3R3SK",
+  "issuedAt": "2026-05-28T13:42:11Z",
+  "notBefore": "2026-05-28T13:42:11Z",
+  "notAfter":  "2026-05-28T13:47:11Z",
+
+  "issuer": {
+    "vendor": "test-sender",
+    "agentId": "agent_sealed_01",
+    "region": "uk-west",
+    "did": "did:web:test.example.org:agent_sealed_01",
+    "federation": "did:web:test.example.org:federation"
+  },
+
+  "audience": {
+    "vendor": "test-receiver",
+    "did": "did:web:test.example.org:receiver",
+    "purpose": "ai-vendor-handoff",
+    "minTier": "sealed",
+    "recipientKeys": [
+      { "kid": "rcv_2026_05_x25519", "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305" }
+    ]
+  },
+
+  "session": {
+    "callId": "callid_fixture_sealed_01",
+    "channel": "voice/pstn",
+    "locale": "en-GB",
+    "media": {
+      "rtpFingerprint": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  },
+
+  "caller": {
+    "assurance": {
+      "method": "voice-biometric+otp",
+      "ial": "IAL2", "aal": "AAL3", "fal": "FAL2",
+      "idp": "did:web:test.example.org:idp",
+      "proofJws": "eyJhbGciOiJFZERTQSJ9..PLACEHOLDER_IDP_PROOF"
+    },
+    "identity": {
+      "sdJwtVc": "eyJhbGciOiJFZERTQSIsInR5cCI6InNkLWp3dCJ9..PLACEHOLDER_SD_JWT_VC",
+      "claimsRevealed": ["given_name", "accountRef"]
+    },
+    "consent": [
+      {
+        "receiptId": "iso27560:rcpt_test_sealed_01",
+        "purpose": "ai-vendor-handoff",
+        "scope":   ["transcript.summary", "intent.slots:non-phi", "payment.disputeDetail:sealed"],
+        "lawfulBasis": "gdpr.art6.1.b",
+        "jurisdiction": "GB",
+        "transferMechanism": "uk-adequacy"
+      }
+    ]
+  },
+
+  "intent": {
+    "current": { "name": "dispute_charge", "confidence": 0.91 },
+    "stack": [{ "name": "authenticate", "status": "satisfied" }],
+    "slots": {
+      "card": { "ref": "tokenex:tok_test_001" }
+    }
+  },
+
+  "sealed": {
+    "alg": "HPKE/X25519-SHA256-CHACHA20POLY1305",
+    "recipients": [
+      { "kid": "rcv_2026_05_x25519", "enc": "PLACEHOLDER_HPKE_ENCAPSULATED_KEY" }
+    ],
+    "ciphertext": "PLACEHOLDER_AEAD_CIPHERTEXT",
+    "fields": ["payment.disputeDetail", "caller.vulnerable"]
+  },
+
+  "transcript": {
+    "format": "ohp.turns/v1",
+    "redaction": { "policy": "pii-mask+pci-drop", "version": "1.1" },
+    "summary": "Authenticated; raising chargeback (details sealed)."
+  },
+
+  "policy": {
+    "retention": { "transcript": "P30D", "audio": "P0D", "embeddings": "P7D" },
+    "redaction": { "pii": "mask", "pci": "drop", "phi": "mask" },
+    "dataResidency": ["GB"]
+  },
+
+  "control": {
+    "verb": "PROPOSE",
+    "reason": "human-requested",
+    "nonce": "ba9876543210fedc"
+  },
+
+  "signatures": [
+    {
+      "kid": "test_sealed_01_ed",
+      "alg": "EdDSA",
+      "jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3Rfc2VhbGVkXzAxX2VkIn0..PLACEHOLDER_SIGNATURE_SEALED"
+    }
+  ]
+}

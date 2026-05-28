@@ -1,0 +1,12 @@
+{
+  "outcome": "accept",
+  "now": "2026-05-28T13:43:00Z",
+  "tier": "signed",
+  "verb": "PROPOSE",
+  "schemaValid": true,
+  "freshnessOk": true,
+  "tierGateOk": true,
+  "signatureVerifyRequired": true,
+  "v0_1_status": "structural-only; signature verification deferred to v0.2 once synthetic key material lands",
+  "notes": "When real signatures ship in v0.2, the signature MUST verify against the issuer's published JWKS."
+}

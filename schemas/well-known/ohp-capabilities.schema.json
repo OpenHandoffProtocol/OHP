@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ohp.dev/schemas/well-known/ohp-capabilities.schema.json",
+  "title": "OHP Capabilities Manifest",
+  "description": "Schema for /.well-known/ohp-capabilities.json, published by every OHP receiver.",
+  "type": "object",
+  "required": ["ohp", "maxTier", "bindings", "verbs", "purposes", "jurisdictions"],
+  "properties": {
+    "ohp": {
+      "type": "string",
+      "const": "0.1",
+      "description": "OHP wire-format version supported."
+    },
+    "maxTier": {
+      "type": "string",
+      "enum": ["core", "signed", "sealed", "regulated"],
+      "description": "Highest conformance tier this receiver supports."
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["ohp/sip-info", "ohp/ws", "ohp/https", "ohp/grpc"]
+      },
+      "description": "Transport bindings this receiver supports."
+    },
+    "verbs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": ["PROPOSE", "ACCEPT", "REJECT", "ASSUME", "RETURN", "INCIDENT"]
+      },
+      "description": "Control verbs this receiver accepts."
+    },
+    "purposes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Audience purposes this receiver accepts."
+    },
+    "jurisdictions": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z]{2,4}$" },
+      "description": "ISO 3166-1 alpha-2 (or supranational like EEA) jurisdictions this receiver may process data in."
+    },
+    "annexIIIAllowed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "EU AI Act Annex III clauses this receiver accepts (Regulated tier)."
+    },
+    "gpaiPolicy": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of this receiver's GPAI policy (Regulated tier)."
+    },
+    "endpoints": {
+      "type": "object",
+      "description": "Per-binding endpoint URLs.",
+      "properties": {
+        "ohp/https": { "type": "string", "format": "uri" },
+        "ohp/ws": { "type": "string", "format": "uri" },
+        "ohp/grpc": { "type": "string", "format": "uri" }
+      }
+    },
+    "rateLimits": {
+      "type": "object",
+      "description": "Advertised per-issuer-kid rate limits.",
+      "properties": {
+        "envelopesPerSecond": { "type": "integer", "minimum": 1 },
+        "envelopesPerMinute": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "contact": {
+      "type": "string",
+      "format": "email",
+      "description": "Operational contact for OHP issues at this receiver."
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this manifest was last published."
+    }
+  }
+}

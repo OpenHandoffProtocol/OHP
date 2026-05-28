@@ -1,0 +1,12 @@
+{
+  "outcome": "structural-only",
+  "v0_1_status": "envelope is structurally valid; HPKE round-trip exercise is documented in README. End-to-end verification (real keys, real ciphertext, opened plaintext) deferred to v0.2.",
+  "now": "2026-05-28T13:43:00Z",
+  "schemaValid": true,
+  "freshnessOk": true,
+  "tierGateOk": true,
+  "v0_2_expected_outcome_when_real": {
+    "outcome": "accept",
+    "openedSealedFields": ["payment.disputeDetail", "caller.vulnerable"]
+  }
+}

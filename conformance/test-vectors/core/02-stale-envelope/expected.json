@@ -1,0 +1,8 @@
+{
+  "outcome": "reject",
+  "now": "2026-05-28T13:00:00Z",
+  "rejectReason": "stale",
+  "firstFailingStep": 3,
+  "stepDescription": "notAfter (2026-05-28T12:05:00Z) is before the receiver's now (2026-05-28T13:00:00Z), exceeding the 5-second clock-skew margin.",
+  "notes": "Schema validation MUST still pass; the rejection is purely a freshness failure."
+}
